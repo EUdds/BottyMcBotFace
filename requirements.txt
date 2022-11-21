@@ -1,0 +1,13 @@
+aiohttp==3.8.3
+aiosignal==1.3.1
+async-timeout==4.0.2
+attrs==22.1.0
+charset-normalizer==2.1.1
+-e git+ssh://git@github.com/EUdds/BottyMcBotFace.git@136c210efa68bc6c3deff84817cddb8fd92272f0#egg=DaBotty
+discord.py==2.0.1
+frozenlist==1.3.3
+idna==3.4
+load-dotenv==0.1.0
+multidict==6.0.2
+python-dotenv==0.21.0
+yarl==1.8.1
