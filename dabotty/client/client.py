@@ -2,24 +2,42 @@ import discord
 import logging
 
 
-class DaBottyClient():
-    client: discord.Client = discord.Client(intents=discord.Intents.default())
+class DaBottyClient(discord.Client):
     
     def __init__(self):
+        intents = discord.Intents.default()
+        intents.message_content = True
+        super().__init__(intents=intents)
         self.logger = logging.getLogger('discord')
+        self.logger.setLevel(logging.DEBUG)
+        self.message_handlers = []
 
     
     async def on_ready(self):
-        print(f'{self.client.user} has connected to Discord!')
-    
+        self.log('info', 'Logged in as %s' % self.user)
 
-    def add_event(self, event, kwargs):
-        self.client.event(event)
+    async def on_message(self, message):
+        for handler in self.message_handlers:
+            await handler(message)
     
-    def run(self, token):
-        self.log('info', 'Starting DaBotty')
-        self.client.event(self.on_ready)
-        self.client.run(token)
+    def add_on_message_action(self, handler):
+        print('debug', 'Added message handler %s' % handler)
+        self.message_handlers.append(handler)
+    
+    def load_extension(self, extension):
+        print('Loading extension %s' % extension)
+        try:
+            module_import = __import__(extension)
+            extension_prefix = extension.split('.')[1]
+            modules = getattr(module_import, extension_prefix)
+            module = getattr(modules, extension.split('.')[2])
+            if hasattr(module, 'register'):
+                module.register()
+            else:
+                print('Extension %s does not have a register function' % extension)
+        except Exception as e:
+            print('Failed to load extension %s' % extension)
+            raise e
     
     def log(self, level, message):
         if level == 'info':
